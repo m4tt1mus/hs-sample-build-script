@@ -16,7 +16,7 @@ properties {
 	$nugetDir = "$baseDir\tools\nuget"
 	$stageDir = "$baseDir\build\stage"
 	$packageDir = "$baseDir\build\package"
-	$octopusDir = "$baseDir\tools\octopus"
+	$octopusExe = "$baseDir\tools\OctopusTools\tools\Octo.exe"
 	
 	# database related properties
 	$rhExe = "$baseDir\tools\roundhouse\tools\rh.exe"
