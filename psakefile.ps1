@@ -35,12 +35,16 @@ task Test -depends Compile, Clean {
 	set-location $baseDir
 }
 
-task Compile -depends Clean {
+task Compile -depends Clean, Restore {
 	RunMsBuild -target "rebuild"
 }
 
 task Clean {
 	RunMsBuild -target "clean"
+}
+
+task Restore {
+	exec { & $nugetDir\nuget.exe restore $sourceDir\$projectName.sln }
 }
 
 task ? -Description "Helper to display task info" {
