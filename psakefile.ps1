@@ -26,6 +26,8 @@ properties {
 
 task default -depends Test
 
+task ci -depends CommonAssemblyInfo, Test
+
 task Test -depends Compile, Clean {
 	get-childitem src *.Tests -directory | foreach-object {
 		set-location $_.fullname
@@ -60,3 +62,18 @@ task Info {
 function RunMsBuild($target) {
 	exec { dotnet.exe msbuild /t:$target /v:q /m /p:Configuration=$projectConfig /nologo /nr:false $sourceDir\$projectName.sln }
 }
+
+task CommonAssemblyInfo {
+	$yearStamp = get-date -Format yyyy
+"using System.Reflection;
+using System.Runtime.InteropServices;
+
+[assembly: AssemblyVersionAttribute(""$version"")]
+[assembly: AssemblyFileVersionAttribute(""$version"")]
+[assembly: AssemblyCopyrightAttribute(""Copyright $yearStamp"")]
+[assembly: AssemblyProductAttribute(""$projectName"")]
+[assembly: AssemblyCompanyAttribute(""Headspring"")]
+[assembly: AssemblyConfigurationAttribute(""$projectConfig"")]
+[assembly: AssemblyInformationalVersionAttribute(""$version"")]"  | out-file "$sourceDir\CommonAssemblyInfo.cs" -encoding "ASCII"
+}
+
