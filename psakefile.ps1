@@ -9,19 +9,19 @@ properties {
 	$projectConfig = "Release"
 
 	# paths
-	$baseDir = resolve-path .\
-	$sourceDir = "$baseDir\src"
-	$dbDir = "$baseDir\src\Databases"	
-	$testResultsDir = "$baseDir\build\testResults"
-	$nugetDir = "$baseDir\tools\nuget"
-	$stageDir = "$baseDir\build\stage"
-	$packageDir = "$baseDir\build\package"
-	$octopusExe = "$baseDir\tools\OctopusTools\tools\Octo.exe"
+	$baseDir = resolve-path ./
+	$sourceDir = "$baseDir/src"
+	$dbDir = "$baseDir/src/Databases"	
+	$testResultsDir = "$baseDir/build/testResults"
+	$nugetDir = "$baseDir/tools/nuget"
+	$stageDir = "$baseDir/build/stage"
+	$packageDir = "$baseDir/build/package"
+	$octopusExe = "$baseDir/tools/OctopusTools/tools/Octo.exe"
 	
 	# database related properties
-	$rhExe = "$baseDir\tools\roundhouse\tools\rh.exe"
+	$rhExe = "$baseDir/tools/roundhouse/tools/rh.exe"
 	$rhOutputDir = "$baseDir"
-	$rhVersionFile = "$dbDir\_BuildInfo.xml"
+	$rhVersionFile = "$dbDir/_BuildInfo.xml"
 }
 
 task default -depends Test
@@ -46,7 +46,7 @@ task Clean {
 }
 
 task Restore {
-	exec { & $nugetDir\nuget.exe restore $sourceDir\$projectName.sln }
+	exec { & $nugetDir/nuget.exe restore $sourceDir/$projectName.sln }
 }
 
 task ? -Description "Helper to display task info" {
@@ -60,7 +60,7 @@ task Info {
 
 
 function RunMsBuild($target) {
-	exec { dotnet.exe msbuild /t:$target /v:q /m /p:Configuration=$projectConfig /nologo /nr:false $sourceDir\$projectName.sln }
+	exec { dotnet.exe msbuild /t:$target /v:q /m /p:Configuration=$projectConfig /nologo /nr:false $sourceDir/$projectName.sln }
 }
 
 task CommonAssemblyInfo {
@@ -74,6 +74,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProductAttribute(""$projectName"")]
 [assembly: AssemblyCompanyAttribute(""Headspring"")]
 [assembly: AssemblyConfigurationAttribute(""$projectConfig"")]
-[assembly: AssemblyInformationalVersionAttribute(""$version"")]"  | out-file "$sourceDir\CommonAssemblyInfo.cs" -encoding "ASCII"
+[assembly: AssemblyInformationalVersionAttribute(""$version"")]"  | out-file "$sourceDir/CommonAssemblyInfo.cs" -encoding "ASCII"
 }
 
