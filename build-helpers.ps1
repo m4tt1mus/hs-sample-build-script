@@ -15,16 +15,16 @@ function write-help($example, $description) {
     write-host "    $description"
 }
 
-function project-properties($majorMinorVersion, $buildNumber) {
+function project-properties($majorMinorVersion, $buildNumber, $product, $company) {
 
     $versionPrefix = "$majorMinorVersion.$buildNumber"
     $versionSuffix = if ($buildNumber -eq "") { "dev" } else { "" }
     $copyright = $(get-copyright)
 
     if ($versionSuffix) {
-        write-host "$product $versionPrefix-$versionSuffix"
+        write-host "$company $product $versionPrefix-$versionSuffix"
     } else {
-        write-host "$product $versionPrefix"
+        write-host "$company $product $versionPrefix"
     }
 
     write-host $copyright
@@ -39,6 +39,17 @@ function project-properties($majorMinorVersion, $buildNumber) {
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
 </Project>
+"@
+
+	regenerate-file (resolve-path "CommonAssemblyInfo.cs") @"
+using System.Reflection;
+
+[assembly: AssemblyVersion("$versionPrefix")]
+[assembly: AssemblyFileVersion("$versionPrefix")]
+[assembly: AssemblyCopyright("$copyright")]
+[assembly: AssemblyProduct("$product")]
+[assembly: AssemblyCompany("$company")]
+[assembly: AssemblyInformationalVersion("$versionPrefix-$versionSuffix")]
 "@
 }
 
