@@ -1,10 +1,8 @@
-using System.Reflection;
-using System.Runtime.InteropServices;
+﻿using System.Reflection;
 
-[assembly: AssemblyVersionAttribute("1.0.0.0")]
-[assembly: AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: AssemblyCopyrightAttribute("Copyright 2018")]
-[assembly: AssemblyProductAttribute("SampleProject")]
-[assembly: AssemblyCompanyAttribute("Headspring")]
-[assembly: AssemblyConfigurationAttribute("Release")]
-[assembly: AssemblyInformationalVersionAttribute("1.0.0.0")]
+[assembly: AssemblyVersion("2.0.0")]
+[assembly: AssemblyFileVersion("2.0.0")]
+[assembly: AssemblyCopyright("© 2015-2018 Headspring")]
+[assembly: AssemblyProduct("Sample Product")]
+[assembly: AssemblyCompany("Headspring")]
+[assembly: AssemblyInformationalVersion("2.0.0-dev")]
