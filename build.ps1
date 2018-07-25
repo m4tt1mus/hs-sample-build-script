@@ -30,7 +30,7 @@ main {
     # }
 
     task ".NET Environment" { dotnet --info }
-    task "Project Properties" { project-properties "2.0" $buildNumber } src
+    task "Project Properties" { project-properties "2.0" $buildNumber $product $owner } src
     task "Clean" { dotnet clean --configuration $configuration /nologo } src
     # task "Restore (Database Migration)" { dotnet restore --packages ./packages/ } src/EmployeeDirectory.DatabaseMigration
     task "Restore (Solution)" { dotnet restore } src
@@ -43,8 +43,7 @@ main {
     # } elseif ($target -eq "ci") {
     #     task "Rebuild TEST Database" { rebuild-database TEST } src/EmployeeDirectory.DatabaseMigration
     # }
-
-
+	
     task "Test" {
         get-childitem . *.Tests -directory | foreach-object {
             set-location $_.fullname
