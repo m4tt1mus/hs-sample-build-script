@@ -17,8 +17,9 @@ function write-help($example, $description) {
 
 function project-properties($majorMinorVersion, $buildNumber, $product, $company) {
 
-    $versionPrefix = "$majorMinorVersion.$buildNumber"
+    $versionPrefix = if ($buildNumber -ne "") { "$majorMinorVersion.$buildNumber" } else { "$majorMinorVersion" }
     $versionSuffix = if ($buildNumber -eq "") { "dev" } else { "" }
+    $commonAsmSuffix = if ($versionSuffix -eq "") { "" } else { "-$versionSuffix" }
     $copyright = $(get-copyright)
 
     if ($versionSuffix) {
@@ -49,7 +50,7 @@ using System.Reflection;
 [assembly: AssemblyCopyright("$copyright")]
 [assembly: AssemblyProduct("$product")]
 [assembly: AssemblyCompany("$company")]
-[assembly: AssemblyInformationalVersion("$versionPrefix-$versionSuffix")]
+[assembly: AssemblyInformationalVersion("$versionPrefix$commonAsmSuffix")]
 "@
 }
 
@@ -61,7 +62,11 @@ function get-copyright {
 }
 
 function regenerate-file($path, $newContent) {
-    $oldContent = [IO.File]::ReadAllText($path)
+    if (test-path $path -PathType Leaf) {
+        $oldContent = $null
+    } else {
+        $oldContent = [IO.File]::ReadAllText($path)
+    }
 
     if ($newContent -ne $oldContent) {
         write-host "Generating $path"
@@ -72,7 +77,7 @@ function regenerate-file($path, $newContent) {
 function delete-directory($path) {
     if (test-path $path) {
         write-host "Deleting $path"
-        rd $path -recurse -force -ErrorAction SilentlyContinue | out-null
+        remove-item $path -recurse -force -ErrorAction SilentlyContinue | out-null
     }
 }
 
@@ -174,28 +179,28 @@ function execute($command, $path) {
     }
 }
 
-function help($helpBlock) {
-    $global:helpBlock = $helpBlock
-}
+# function help($helpBlock) {
+#     $global:helpBlock = $helpBlock
+# }
 
-function main($mainBlock) {
-    if ($target -eq "help") {
-         if ($global:helpBlock) {
-            &$global:helpBlock
-            return
-         }
-    }
+# function main($mainBlock) {
+#     if ($target -eq "help") {
+#          if ($global:helpBlock) {
+#             &$global:helpBlock
+#             return
+#          }
+#     }
 
-    try {
-        &$mainBlock
-        write-host
-        write-host "Build Succeeded" -fore GREEN
-        exit 0
-    } catch [Exception] {
-        write-host
-        write-host $_.Exception.Message -fore DARKRED
-        write-host
-        write-host "Build Failed" -fore DARKRED
-        exit 1
-    }
-}
+#     try {
+#         &$mainBlock
+#         write-host
+#         write-host "Build Succeeded" -fore GREEN
+#         exit 0
+#     } catch [Exception] {
+#         write-host
+#         write-host $_.Exception.Message -fore DARKRED
+#         write-host
+#         write-host "Build Failed" -fore DARKRED
+#         exit 1
+#     }
+# }

@@ -1,9 +1,9 @@
 ﻿<Project>
     <PropertyGroup>
-        <Product>Sample Product</Product>
-        <VersionPrefix>2.0.0</VersionPrefix>
+        <Product>Sample Build Scripts</Product>
+        <VersionPrefix>2.0</VersionPrefix>
         <VersionSuffix>dev</VersionSuffix>
-        <Copyright>© 2015-2018 Headspring</Copyright>
+        <Copyright>© 2018 Headspring</Copyright>
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
 </Project>
