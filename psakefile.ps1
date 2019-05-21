@@ -21,7 +21,7 @@ exec {
 
 exec { dotnet --info }
   
-task default -depends Test, Migrate
+task default -depends Test
 task CI -depends Clean, Test, Publish -description "Continuous Integration process"
 task Rebuild -depends Clean, Compile -description "Rebuild the code and database, no testing"
 
@@ -32,12 +32,12 @@ task Test -depends Compile -description "Run unit tests" {
 }
   
 task Compile -description "Compile the solution" {
-    exec { project-properties } -workingDirectory src
+    exec { set-project-properties } -workingDirectory src
     exec { dotnet build --configuration $configuration /nologo } -workingDirectory src
 }
 
 task Publish -depends Compile -description "Publish the primary projects for distribution" {
-    delete-directory $publish
+    remove-directory-silently $publish
     exec { publish-project } -workingDirectory src/Sample1.NetCore
 }
   
