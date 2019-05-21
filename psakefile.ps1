@@ -1,36 +1,50 @@
-include "./build-helpers.ps1"
+include "./psake-build-helpers.ps1"
 
 properties {
     $configuration = 'Release'
-    $testResults = 'TestResults'
-    $baseVersion = '2.0'
-    $buildNumber = ''
+    $version = '1.0.999'
     $owner = 'Headspring'
-    $product = 'Sample Build Scripts'
+    $product = 'Sample Build Script Application'
     $yearInitiated = '2018'
+    $projectRootDirectory = "$(resolve-path .)"
+    $publish = "$projectRootDirectory/Publish"
+    $testResults = "$projectRootDirectory/TestResults"
+}
+
+exec {
+    if ($env:GITVERSION_SEMVER) {
+        properties {
+            $version = $env:GITVERSION_SEMVER
+        }
+    }
 }
 
 exec { dotnet --info }
   
-task default -depends Test
+task default -depends Test, Migrate
+task CI -depends Clean, Test, Publish -description "Continuous Integration process"
+task Rebuild -depends Clean, Compile -description "Rebuild the code and database, no testing"
 
-task Test -depends Compile, Clean {
-    $testResultsPath = "$(resolve-path .)/$testResults" 
+task Test -depends Compile -description "Run unit tests" {
     get-childitem . src/*.Tests -directory | foreach-object {
-        exec { dotnet fixie --configuration $configuration --no-build --report "$testResultsPath/$($_.name).xml" } -workingDirectory $_.fullname
+        exec { dotnet fixie --configuration $configuration --no-build --report "$testResults/$($_.name).xml" } -workingDirectory $_.fullname
     }
 }
   
-task Compile -depends Clean {
-    exec { project-properties $baseVersion $buildNumber $product $owner } -workingDirectory src
-    exec { dotnet build --configuration $configuration --no-restore /nologo } -workingDirectory src
+task Compile -description "Compile the solution" {
+    exec { project-properties } -workingDirectory src
+    exec { dotnet build --configuration $configuration /nologo } -workingDirectory src
+}
+
+task Publish -depends Compile -description "Publish the primary projects for distribution" {
+    delete-directory $publish
+    exec { publish-project } -workingDirectory src/Sample1.NetCore
 }
   
-task Clean {
+task Clean -description "Clean out all the binary folders" {
     exec { dotnet clean --configuration $configuration /nologo } -workingDirectory src
 }
   
-task ? -Description "Helper to display task info" {
-    Write-Documentation
+task ? -alias help -description "Display help content and possible targets" {
+    WriteDocumentation
 }
-  

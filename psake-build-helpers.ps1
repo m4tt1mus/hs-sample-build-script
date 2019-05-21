@@ -1,56 +1,19 @@
-﻿function validate-target([Parameter(ValueFromRemainingArguments)]$expectedTargets) {
-    if ( ($expectedTargets -eq $null) -or (!$expectedTargets.Contains($target)) ) {
-
-        if ($global:helpBlock) {
-            &$global:helpBlock
-        }
-
-        throw "Invalid Target: $target`r`nValid Targets: $expectedTargets"
-    }
-}
-
-function write-help($example, $description) {
-    write-host
-    write-host "$example" -foregroundcolor GREEN
-    write-host "    $description"
-}
-
-function project-properties($majorMinorVersion, $buildNumber, $product, $company) {
-
-    $versionPrefix = if ($buildNumber -ne "") { "$majorMinorVersion.$buildNumber" } else { "$majorMinorVersion" }
-    $versionSuffix = if ($buildNumber -eq "") { "dev" } else { "" }
-    $commonAsmSuffix = if ($versionSuffix -eq "") { "" } else { "-$versionSuffix" }
+﻿
+function project-properties {
     $copyright = $(get-copyright)
 
-    if ($versionSuffix) {
-        write-host "$company $product $versionPrefix-$versionSuffix"
-    } else {
-        write-host "$company $product $versionPrefix"
-    }
-
+    write-host "$product $version"
     write-host $copyright
 
-    regenerate-file (resolve-path "Directory.build.props") @"
+    regenerate-file "$pwd/Directory.Build.props" @"
 <Project>
     <PropertyGroup>
         <Product>$product</Product>
-        <VersionPrefix>$versionPrefix</VersionPrefix>
-        <VersionSuffix>$versionSuffix</VersionSuffix>
+        <Version>$version</Version>
         <Copyright>$copyright</Copyright>
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
 </Project>
-"@
-
-	regenerate-file (resolve-path "CommonAssemblyInfo.cs") @"
-using System.Reflection;
-
-[assembly: AssemblyVersion("$versionPrefix")]
-[assembly: AssemblyFileVersion("$versionPrefix")]
-[assembly: AssemblyCopyright("$copyright")]
-[assembly: AssemblyProduct("$product")]
-[assembly: AssemblyCompany("$company")]
-[assembly: AssemblyInformationalVersion("$versionPrefix$commonAsmSuffix")]
 "@
 }
 
@@ -61,8 +24,14 @@ function get-copyright {
     return "© $copyrightSpan $owner"
 }
 
+function publish-project {
+    $project = Split-Path $pwd -Leaf
+    Write-Host "Publishing $project"
+    dotnet publish --configuration $configuration --no-restore --output $publish/$project /nologo
+}
+
 function regenerate-file($path, $newContent) {
-    if (test-path $path -PathType Leaf) {
+    if (-not (test-path $path -PathType Leaf)) {
         $oldContent = $null
     } else {
         $oldContent = [IO.File]::ReadAllText($path)
@@ -77,7 +46,7 @@ function regenerate-file($path, $newContent) {
 function delete-directory($path) {
     if (test-path $path) {
         write-host "Deleting $path"
-        remove-item $path -recurse -force -ErrorAction SilentlyContinue | out-null
+        Remove-Item $path -recurse -force -ErrorAction SilentlyContinue | out-null
     }
 }
 
@@ -157,50 +126,27 @@ function rebuild-database([Parameter(ValueFromRemainingArguments)]$environments)
     }
 }
 
-function task($heading, $command, $path) {
-    write-host
-    write-host $heading -fore CYAN
-    execute $command $path
-}
-
-function execute($command, $path) {
-    if ($path -eq $null) {
-        $global:lastexitcode = 0
-        & $command
-    } else {
-        Push-Location $path
-        $global:lastexitcode = 0
-        & $command
-        Pop-Location
-    }
-
-    if ($lastexitcode -ne 0) {
-        throw "Error executing command:$command"
+function start-mysql-container($containerName, $mySqlPort = 23306) {
+    $portSub = "$($mySqlPort):3306"
+    docker run --name $containerName -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=skfdata -d -p $portSub mysql:5 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Docker container created failed."
     }
 }
 
-# function help($helpBlock) {
-#     $global:helpBlock = $helpBlock
-# }
+function stop-mysql-container($containerName) {
+    docker stop $containerName
+    docker rm $containerName
+}
 
-# function main($mainBlock) {
-#     if ($target -eq "help") {
-#          if ($global:helpBlock) {
-#             &$global:helpBlock
-#             return
-#          }
-#     }
+function wait-for-mysql-container($containerName) {
+    $mysqlIsReady = $FALSE
 
-#     try {
-#         &$mainBlock
-#         write-host
-#         write-host "Build Succeeded" -fore GREEN
-#         exit 0
-#     } catch [Exception] {
-#         write-host
-#         write-host $_.Exception.Message -fore DARKRED
-#         write-host
-#         write-host "Build Failed" -fore DARKRED
-#         exit 1
-#     }
-# }
+    for ($count = 0; ($count -lt 10) -and (-not $mysqlIsReady); $count++) {
+        Start-Sleep -Seconds 5
+        docker exec $containerName mysql --user=root --password=root -e "SELECT 1"
+        $mysqlIsReady = $LASTEXITCODE -eq 0
+    }
+
+    return $mysqlIsReady
+}
