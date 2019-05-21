@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fixie" Version="2.0.2" />
-    <DotNetCliToolReference Include="Fixie.Console" Version="2.0.2" />
+    <PackageReference Include="Fixie" Version="2.0.4" />
+    <DotNetCliToolReference Include="Fixie.Console" Version="2.0.4" />
   </ItemGroup>
 
 </Project>
