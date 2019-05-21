@@ -1,9 +1,0 @@
-﻿<Project>
-    <PropertyGroup>
-        <Product>Sample Build Scripts</Product>
-        <VersionPrefix>2.0</VersionPrefix>
-        <VersionSuffix>dev</VersionSuffix>
-        <Copyright>© 2018 Headspring</Copyright>
-        <LangVersion>latest</LangVersion>
-    </PropertyGroup>
-</Project>
