@@ -10,20 +10,14 @@ properties {
     $publish = "$projectRootDirectory/Publish"
     $testResults = "$projectRootDirectory/TestResults"
 }
-
-exec {
-    if ($env:GITVERSION_SEMVER) {
-        properties {
-            $version = $env:GITVERSION_SEMVER
-        }
-    }
-}
-
-exec { dotnet --info }
-  
+ 
 task default -depends Test
 task CI -depends Clean, Test, Publish -description "Continuous Integration process"
 task Rebuild -depends Clean, Compile -description "Rebuild the code and database, no testing"
+
+task Info -description "Display runtime information" {
+    exec { dotnet --info }
+}
 
 task Test -depends Compile -description "Run unit tests" {
     get-childitem . src/*.Tests -directory | foreach-object {
@@ -31,8 +25,8 @@ task Test -depends Compile -description "Run unit tests" {
     }
 }
   
-task Compile -description "Compile the solution" {
-    exec { set-project-properties } -workingDirectory src
+task Compile -depends Info -description "Compile the solution" {
+    exec { set-project-properties $version } -workingDirectory src
     exec { dotnet build --configuration $configuration /nologo } -workingDirectory src
 }
 
@@ -43,6 +37,8 @@ task Publish -depends Compile -description "Publish the primary projects for dis
   
 task Clean -description "Clean out all the binary folders" {
     exec { dotnet clean --configuration $configuration /nologo } -workingDirectory src
+    remove-directory-silently $publish
+    remove-directory-silently $testResults
 }
   
 task ? -alias help -description "Display help content and possible targets" {
