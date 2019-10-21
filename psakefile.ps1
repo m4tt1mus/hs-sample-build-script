@@ -21,7 +21,7 @@ task Info -description "Display runtime information" {
 
 task Test -depends Compile -description "Run unit tests" {
     get-childitem . src/*.Tests -directory | foreach-object {
-        exec { dotnet fixie --configuration $configuration --no-build --report "$testResults/$($_.name).xml" } -workingDirectory $_.fullname
+        exec { dotnet fixie --configuration $configuration --no-build } -workingDirectory $_.fullname
     }
 }
   
