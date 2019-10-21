@@ -10,6 +10,12 @@ You'll need PowerShell 5+ installed, or PowerShell Core.  To install the depende
 setup.cmd
 ```
 
+If you're in Linux or Mac, you can use the shell script instead (assuming you've got PowerShell Core installed already):
+
+```
+./setup.sh
+```
+
 Or if you're already in PowerShell:
 
 ```
@@ -34,6 +40,14 @@ psakefile.ps1
 setup.cmd
 setup.ps1
 tools/
+```
+
+To support Linux and Mac builds, also copy:
+
+```
+.gitattributes
+psake.sh
+setup.sh
 ```
 
 Then you should customize `setup.ps1` to include anything else you need for your build, and customize `psakefile.ps1` to add any other useful tasks you need.
