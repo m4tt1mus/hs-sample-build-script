@@ -7,11 +7,11 @@ Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
 # Install PSAKE
 # Note: 4.7.4 is used for now, 4.8.0 has some bugs and incompatibilities
 Write-Host 'Installing PSake'
-Install-Module -Name psake -MaximumVersion 4.7.4 -Scope CurrentUser
+Install-Module -Name psake -MaximumVersion 4.7.4 -Scope CurrentUser -Force
 
 # Install NuGet based tools
-Write-Host 'Installing NuGet Tools'
-tools/nuget/nuget install tools/packages.config -ExcludeVersion -OutputDirectory tools
+# Write-Host 'Installing NuGet Tools'
+# tools/nuget/nuget install tools/packages.config -ExcludeVersion -OutputDirectory tools
 
 # Install dotnet based tools
 Write-Host 'Install dotnet tools'
