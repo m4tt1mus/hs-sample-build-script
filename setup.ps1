@@ -9,5 +9,5 @@ Write-Host 'Installing PSake'
 Install-Module -Name psake -Scope CurrentUser -Force
 
 # Install dotnet based tools (requires a manifest)
-Write-Host 'Install dotnet tools'
-dotnet tool restore
+#Write-Host 'Install dotnet tools'
+#dotnet tool restore
