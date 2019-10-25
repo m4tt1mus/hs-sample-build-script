@@ -15,6 +15,14 @@ task default -depends Test
 task CI -depends Clean, Test, Publish -description "Continuous Integration process"
 task Rebuild -depends Clean, Compile -description "Rebuild the code and database, no testing"
 
+task Sample {
+    sample-function # will return "Sample Value 2"
+}
+
+task SampleToo {
+    sample-function-too
+}
+
 task Info -description "Display runtime information" {
     exec { dotnet --info }
 }
