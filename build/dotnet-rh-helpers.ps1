@@ -7,7 +7,7 @@
 #     TEST = Get-Connection-String $product src/$product.Tests/appsettings.json;
 # }
 #
-# And don't foget to add the tasks as dependent where applicable
+# And don't forget to add the tasks as dependent where applicable
 
 task UpdateDatabase -alias udb -description "Run migrations scripts" {
     exec { dotnet rh -cs $db_connectionStrings["DEV"] -f $db_scripts --env "DEV" --silent }
