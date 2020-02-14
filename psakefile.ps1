@@ -1,4 +1,4 @@
-include "./psake-build-helpers.ps1"
+include "./build/general-helpers.ps1"
 
 properties {
     $configuration = 'Release'
@@ -10,7 +10,7 @@ properties {
     $publish = "$projectRootDirectory/Publish"
     $testResults = "$projectRootDirectory/TestResults"
 }
- 
+
 task default -depends Test
 task CI -depends Clean, Test, Publish -description "Continuous Integration process"
 task Rebuild -depends Clean, Compile -description "Rebuild the code and database, no testing"
