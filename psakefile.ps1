@@ -26,8 +26,7 @@ task Test -depends Compile -description "Run unit tests" {
 }
   
 task Compile -depends Info -description "Compile the solution" {
-    exec { set-project-properties $version } -workingDirectory src
-    exec { dotnet build --configuration $configuration /nologo } -workingDirectory src
+    exec { dotnet build --configuration $configuration --nologo -p:"Product=$($product)" -p:"Copyright=$(get-copyright)" -p:"Version=$($version)" } -workingDirectory src
 }
 
 task Publish -depends Compile -description "Publish the primary projects for distribution" {
