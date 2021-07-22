@@ -8,6 +8,7 @@ properties {
     $yearInitiated = '2018'
     $projectRootDirectory = "$(resolve-path .)"
     $publish = "$projectRootDirectory/Publish"
+	$artifact = "$projectRootDirectory/Artifacts"
     $testResults = "$projectRootDirectory/TestResults"
 }
 
@@ -32,6 +33,11 @@ task Compile -depends Info -description "Compile the solution" {
 task Publish -depends Compile -description "Publish the primary projects for distribution" {
     remove-directory-silently $publish
     exec { publish-project } -workingDirectory src/Sample1.NetCore
+}
+
+task Package -depends Compile -description "Package the primary project into Nuget package with version number" {
+	remove-directory-silently $artifact
+    exec { dotnet pack --configuration $configuration --nologo -p:"Product=$($product)" -p:"Copyright=$(get-copyright)" -p:"Version=$($version)" } -workingDirectory src
 }
   
 task Clean -description "Clean out all the binary folders" {
