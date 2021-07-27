@@ -8,7 +8,7 @@ properties {
     $yearInitiated = '2018'
     $projectRootDirectory = "$(resolve-path .)"
     $publish = "$projectRootDirectory/Publish"
-	$artifacts = "$projectRootDirectory/Artifacts"
+    $artifacts = "$projectRootDirectory/Artifacts"
     $testResults = "$projectRootDirectory/TestResults"
 }
 
@@ -36,7 +36,7 @@ task Publish -depends Compile -description "Publish the primary projects for dis
 }
 
 task Package -depends Compile -description "Package the primary project into Nuget package with version number" {
-	remove-directory-silently $artifacts
+    remove-directory-silently $artifacts
     exec { dotnet pack --configuration $configuration --nologo -p:"Product=$($product)" -p:"Copyright=$(get-copyright)" -p:"Version=$($version)" -o:$artifacts} -workingDirectory src
 }
   
