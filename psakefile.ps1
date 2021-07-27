@@ -8,7 +8,6 @@ properties {
     $yearInitiated = '2018'
     $projectRootDirectory = "$(resolve-path .)"
     $publish = "$projectRootDirectory/Publish"
-    $artifacts = "$projectRootDirectory/Artifacts"
     $testResults = "$projectRootDirectory/TestResults"
 }
  
@@ -36,15 +35,14 @@ task Publish -depends Compile -description "Publish the primary projects for dis
 }
 
 task Package -depends Compile -description "Package the primary project into Nuget package with version number" {
-    remove-directory-silently $artifacts
-    exec { dotnet pack --configuration $configuration --nologo -p:"Product=$($product)" -p:"Copyright=$(get-copyright)" -p:"Version=$($version)" -o:$artifacts} -workingDirectory src
+    remove-directory-silently $publish
+    exec { dotnet pack --configuration $configuration --no-restore --no-build --nologo -p:"Product=$($product)" -p:"Copyright=$(get-copyright)" -p:"Version=$($version)" -o:$publish} -workingDirectory src
 }
   
 task Clean -description "Clean out all the binary folders" {
     exec { dotnet clean --configuration $configuration /nologo } -workingDirectory src
     remove-directory-silently $publish
     remove-directory-silently $testResults
-    remove-directory-silently $artifacts
 }
   
 task ? -alias help -description "Display help content and possible targets" {
