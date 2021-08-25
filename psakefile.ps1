@@ -10,7 +10,7 @@ properties {
     $publish = "$projectRootDirectory/Publish"
     $testResults = "$projectRootDirectory/TestResults"
 }
-
+ 
 task default -depends Test
 task CI -depends Clean, Test, Publish -description "Continuous Integration process"
 task Rebuild -depends Clean, Compile -description "Rebuild the code and database, no testing"
@@ -32,6 +32,11 @@ task Compile -depends Info -description "Compile the solution" {
 task Publish -depends Compile -description "Publish the primary projects for distribution" {
     remove-directory-silently $publish
     exec { publish-project } -workingDirectory src/Sample1.NetCore
+}
+
+task Package -depends Compile -description "Package the primary project into Nuget package with version number" {
+    remove-directory-silently $publish
+    exec { dotnet pack --configuration $configuration --no-restore --no-build --nologo -p:"Product=$($product)" -p:"Copyright=$(get-copyright)" -p:"Version=$($version)" -o:$publish} -workingDirectory src
 }
   
 task Clean -description "Clean out all the binary folders" {
